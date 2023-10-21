@@ -1,0 +1,32 @@
+name: Test and Comment
+
+on:
+  pull_request:
+
+permissions:
+  checks: write
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Python tests
+        run: pytest --junit-xml=test-results/results.xml
+
+      - name: Comment on PR
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            test-results/**/*.xml
